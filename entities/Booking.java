@@ -10,140 +10,145 @@ import hotel.credit.CreditCard;
 import hotel.utils.IOUtils;
 
 public class Booking {
-	
-	private enum State {PENDING, CHECKED_IN, CHECKED_OUT};
-	
-	private Guest guest;
-	private Room room;
-	private Date bookedArrival; 
-	private int stayLength;
-	int numberOfOccupants;
-	long confirmationNumber;
-	CreditCard creditCard;
-	
-	private List<ServiceCharge> charges;
-	
-	private State state;
 
+    private enum State {
+        PENDING, CHECKED_IN, CHECKED_OUT
+    };
 
-	
-	public Booking(Guest guest, Room room, 
-			Date arrivalDate, int stayLength, 
-			int numberOfOccupants, 
-			CreditCard creditCard) {
-		
-		this.guest = guest;
-		this.room = room;
-		this.bookedArrival = arrivalDate;
-		this.stayLength = stayLength;
-		this.numberOfOccupants = numberOfOccupants;
-		this.confirmationNumber = generateConfirmationNumber(room.getId(), arrivalDate);
-		this.creditCard = creditCard;
-		this.charges = new ArrayList<>();
-		this.state = State.PENDING;
-	}
+    private Guest guest;
+    private Room room;
+    private Date bookedArrival;
+    private int stayLength;
+    int numberOfOccupants;
+    long confirmationNumber;
+    CreditCard creditCard;
 
-	
-	private long generateConfirmationNumber(int roomId, Date arrivalDate) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(arrivalDate);
-		
-		int year = calendar.get(Calendar.YEAR);
-		int month = calendar.get(Calendar.MONTH);
-		int day = calendar.get(Calendar.DAY_OF_MONTH);
-		
-		String numberString = String.format("%d%d%d%d", day, month, year, roomId);
-		
-		return Long.parseLong(numberString);
-	}
+    private List<ServiceCharge> charges;
 
+    private State state;
 
-	public boolean doTimesConflict(Date requestedArrival, int stayLength) {
-		IOUtils.trace("Booking: timesConflict");
+    public Booking(Guest guest, Room room,
+            Date arrivalDate, int stayLength,
+            int numberOfOccupants,
+            CreditCard creditCard) {
 
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(bookedArrival);
-		calendar.add(Calendar.DATE, stayLength);
-		Date bookedDeparture = calendar.getTime();
-		
-		calendar.setTime(requestedArrival);
-		calendar.add(Calendar.DATE, stayLength);
-		Date requestedDeparture = calendar.getTime();
-		
-		boolean doesConflict = requestedArrival.before(bookedDeparture) && 
-				requestedDeparture.after(bookedArrival);
+        this.guest = guest;
+        this.room = room;
+        this.bookedArrival = arrivalDate;
+        this.stayLength = stayLength;
+        this.numberOfOccupants = numberOfOccupants;
+        this.confirmationNumber = generateConfirmationNumber(room.getId(), arrivalDate);
+        this.creditCard = creditCard;
+        this.charges = new ArrayList<>();
+        this.state = State.PENDING;
+    }
 
-		return doesConflict;
-	}
+    private long generateConfirmationNumber(int roomId, Date arrivalDate) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(arrivalDate);
 
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-	public long getConfirmationNumber() {
-		return confirmationNumber;
-	}
+        String numberString = String.format("%d%d%d%d", day, month, year, roomId);
 
+        return Long.parseLong(numberString);
+    }
 
-	public int getRoomId() {
-		return room.getId();
-	}
-	
-	
-	public Room getRoom() {
-		return room;
-	}
+    public boolean doTimesConflict(Date requestedArrival, int stayLength) {
+        IOUtils.trace("Booking: timesConflict");
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(bookedArrival);
+        calendar.add(Calendar.DATE, stayLength);
+        Date bookedDeparture = calendar.getTime();
 
-	public Date getArrivalDate() {
-		return bookedArrival;
-	}
+        calendar.setTime(requestedArrival);
+        calendar.add(Calendar.DATE, stayLength);
+        Date requestedDeparture = calendar.getTime();
 
+        boolean doesConflict = requestedArrival.before(bookedDeparture)
+                && requestedDeparture.after(bookedArrival);
 
-	public int getStayLength() {
-		return stayLength;
-	}
+        return doesConflict;
+    }
 
+    public long getConfirmationNumber() {
+        return confirmationNumber;
+    }
 
-	public Guest getGuest() {
-		return guest;
-	}
+    public int getRoomId() {
+        return room.getId();
+    }
 
+    public Room getRoom() {
+        return room;
+    }
 
-	public CreditCard getCreditCard() {
-		return creditCard;
-	}
+    public Date getArrivalDate() {
+        return bookedArrival;
+    }
 
+    public int getStayLength() {
+        return stayLength;
+    }
 
-	public boolean isPending() {
-		return state == State.PENDING;
-	}
+    public Guest getGuest() {
+        return guest;
+    }
 
+    public CreditCard getCreditCard() {
+        return creditCard;
+    }
 
-	public boolean isCheckedIn() {
-		return state == State.CHECKED_IN;
-	}
+    public boolean isPending() {
+        return state == State.PENDING;
+    }
 
+    public boolean isCheckedIn() {
+        return state == State.CHECKED_IN;
+    }
 
-	public boolean isCheckedOut() {
-		return state == State.CHECKED_OUT;
-	}
+    public boolean isCheckedOut() {
+        return state == State.CHECKED_OUT;
+    }
 
+    public List<ServiceCharge> getCharges() {
+        return Collections.unmodifiableList(charges);
+    }
 
-	public List<ServiceCharge> getCharges() {
-		return Collections.unmodifiableList(charges);
-	}
+    public void checkIn() {
+        // TODO Auto-generated method stub
+        if (this.state != State.PENDING) {
+            throw new RuntimeException("Not a pending booking. Cannot check in!");
+        }
+        //call room check in
+        room.checkin();
+        //change state
+        this.state = State.CHECKED_IN;
+    }
 
+    public void addServiceCharge(ServiceType serviceType, double cost) {
+        // TODO Auto-generated method stub
+        if (this.state != State.CHECKED_IN) {
+            throw new RuntimeException("Booking is not checked in!");
+        }
+        //create service charge
+        ServiceCharge serviceCharge = new ServiceCharge(serviceType, cost);
+        //add to services
+        charges.add(serviceCharge);
+    }
 
-	public void checkIn() {
-		// TODO Auto-generated method stub
-	}
-
-
-	public void addServiceCharge(ServiceType serviceType, double cost) {
-		// TODO Auto-generated method stub
-	}
-
-
-	public void checkOut() {
-		// TODO Auto-generated method stub
-	}
+    public void checkOut() {
+        // TODO Auto-generated method stub
+        if (this.state != State.CHECKED_IN) {
+            throw new RuntimeException("Booking is not checked in!");
+        }
+        //call room check out
+        room.checkout(this);
+        //change state
+        this.state = State.CHECKED_OUT;
+    }
 
 }
