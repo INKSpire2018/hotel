@@ -60,7 +60,7 @@ public class Room {
 
 
 	public Booking book(Guest guest, Date arrivalDate, int stayLength, int numberOfOccupants, CreditCard creditCard) {
-		Booking booking = new Booking(guest, arrivalDate, stayLength, numberOfOccupants, creditCard);
+		Booking booking = new Booking(guest, this, arrivalDate, stayLength, numberOfOccupants, creditCard);
 		bookings.add(booking);
 		return booking;		
 	}
@@ -78,8 +78,7 @@ public class Room {
 		if(state != State.OCCUPIED)
 			throw new RuntimeException("Room is not occupied.");
 
-		state = State.READY;
-		booking.checkout();
+		state = State.READY;		
 	}
 
 
