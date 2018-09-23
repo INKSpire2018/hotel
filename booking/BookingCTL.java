@@ -1,5 +1,6 @@
 package hotel.booking;
 
+import hotel.booking.BookingUI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -143,11 +144,11 @@ public class BookingCTL {
         boolean authorized = authorizer.authorize(crediCard, cost);
 
         if (authorized) {
-            hotel.book(room, guest, arrivalDate, stayLength, occupantNumber, crediCard);
+            long confirmationNumber = hotel.book(room, guest, arrivalDate, stayLength, occupantNumber, crediCard);
             String guestName = guest.getName();
             String roomDecription = room.getDescription();
             String creditCardVendor = crediCard.getVendor();
-            bookingUI.displayConfirmedBooking(roomDecription, number, arrivalDate, stayLength, guestName, creditCardVendor, number, cost, occupantNumber);
+            bookingUI.displayConfirmedBooking(roomDecription, number, arrivalDate, stayLength, guestName, creditCardVendor, number, cost, confirmationNumber);
             state = State.COMPLETED;
             bookingUI.setState(BookingUI.State.COMPLETED);
         } else {
