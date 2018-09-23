@@ -31,7 +31,7 @@ public class RoomTest {
 //        
 //        testCheckOutMethod(booking);
         
-        //testCheckoutCTL_creditDetailsEntered();
+        testCheckoutCTL_creditDetailsEntered();
 
     }
 
@@ -39,11 +39,8 @@ public class RoomTest {
         Date arrivalDate = Calendar.getInstance().getTime();
         CreditCard creditCard = new CreditCard(CreditCardType.VISA, 12345678, 666);
 
-        int cardNumber = creditCard.getNumber();
-        int cvv = creditCard.getCcv();
-
         Hotel hotel = new Hotel();
-        hotel.addRoom(RoomType.DOUBLE, 1);
+        hotel.addRoom(RoomType.SINGLE, 1);
         hotel.addRoom(RoomType.DOUBLE, 2);
         hotel.addRoom(RoomType.TWIN_SHARE, 3);
 
@@ -51,20 +48,15 @@ public class RoomTest {
 
         Room room = hotel.findAvailableRoom(RoomType.DOUBLE, arrivalDate, 1);
         long confNo = hotel.book(room, guest, arrivalDate, 1, 2, creditCard);
-        Booking booking = hotel.findBookingByConfirmationNumber(confNo);
-        //room.checkin();
-        hotel.checkin(confNo);
+        
+        //hotel.checkin(confNo);
 
-        int roomId = room.getId();
-        //booking.addServiceCharge(ServiceType.ROOM_SERVICE, 7.00);
-
+        System.out.println("--------Testing creditDetailsEntered() Method--------");
+        System.out.println();
+        
         CheckoutCTL controller = new CheckoutCTL(hotel);
-        controller.run();
-
-        System.out.println("--------Before Check Out--------");
-        controller.roomIdEntered(roomId);
-        controller.creditDetailsEntered(CreditCardType.VISA, cardNumber, cvv);
-
+        //controller.run();
+        controller.creditDetailsEntered(CreditCardType.VISA, 1, 12);
     }
 
     private static void testBookMethod() {
