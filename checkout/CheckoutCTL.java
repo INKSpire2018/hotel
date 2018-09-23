@@ -98,31 +98,7 @@ public class CheckoutCTL {
 
 	
 	public void creditDetailsEntered(CreditCardType type, int number, int ccv) {
-                //throw runtime exception if the state is not credit
-		if (state != State.CREDIT) {
-                    String mesg = String.format("CheckoutCTL: creditDetailsEntered : bad state : %s", state);
-                    throw new RuntimeException(mesg);
-		}
-                
-                //create new credit card
-                CreditCard creditCard = new CreditCard(type, number, ccv);
-                //create new authorizer
-                CreditAuthorizer authorizer = new CreditAuthorizer();
-                //get the authorized status
-                Boolean isAuthorized = authorizer.authorize(creditCard, total);
-                
-                //checkout if credit card is authorized
-                if (isAuthorized) {
-                    hotel.checkout(roomId);
-                    checkoutUI.displayMessage("Credit card debited");
-                    state = State.COMPLETED;
-                    checkoutUI.setState(CheckoutUI.State.COMPLETED);
-                }
-                else {
-                    //display error message if the credit was not approved
-                    checkoutUI.displayMessage("Credit was not approved");
-                }
-                
+		// TODO Auto-generated method stub
 	}
 
 
