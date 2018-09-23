@@ -85,24 +85,49 @@ public class Hotel {
 	}
 
 	
-	public long book(Room room, Guest guest, Date arrivalDate, int stayLength, int occupantNumber,CreditCard creditCard) {
-		// TODO Auto-generated method stub
-		return 0L;		
+	public long book(Room room, Guest guest, Date arrivalDate, int stayLength, int occupantNumber,CreditCard creditCard) {           Booking booking = room.book(guest, arrivalDate, stayLength, occupantNumber, creditCard);
+        long confirmationno = booking.getConfirmationNumber();
+        bookingsByConfirmationNumber.put(confirmationno, booking);
+          
+        return confirmationno;		
 	}
 
 	
-	public void checkin(long confirmationNumber) {
-		// TODO Auto-generated method stub
+	public void checkin(long confirmationNumber,Room room, Guest guest, Date arrivalDate, int stayLength, int occupantNumber, CreditCard creditCard) 
+        {
+       Booking booking = room.book(guest, arrivalDate, stayLength, occupantNumber, creditCard);
+       
+       tempConfNumber = booking.getConfirmationNumber();
+        if (confirmationNumber != tempConfNumber) 
+        {
+            throw new RuntimeException("No booking confirmation available");
+        }
+       int roomId= booking.getRoomId();
+       booking.checkIn();
+       activeBookingsByRoomId.put(roomId,booking);
 	}
 
 
 	public void addServiceCharge(int roomId, ServiceType serviceType, double cost) {
-		// TODO Auto-generated method stub
+	Booking booking = activeBookingsByRoomId.get(roomId);
+        if(booking==null)
+       {
+           throw new RuntimeException("No active booking associated with the room");
+       }
+         booking.addServiceCharge(serviceType,cost);
 	}
 
 	
 	public void checkout(int roomId) {
-		// TODO Auto-generated method stub
+		Booking booking = activeBookingsByRoomId.get(roomId);
+       
+       if(booking==null)
+       {
+           throw new RuntimeException("No active booking associated with the room");
+       }
+       
+       booking.checkOut();
+       activeBookingsByRoomId.remove(roomId);
 	}
 
 
