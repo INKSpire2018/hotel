@@ -13,7 +13,7 @@ public class Hotel {
     public Map<RoomType, Map<Integer, Room>> roomsByType;
     public Map<Long, Booking> bookingsByConfirmationNumber;
     public Map<Integer, Booking> activeBookingsByRoomId;
-    
+
     long tempConfNumber;
 
     private Booking booking;
@@ -82,53 +82,46 @@ public class Hotel {
     }
 
     public long book(Room room, Guest guest, Date arrivalDate, int stayLength, int occupantNumber, CreditCard creditCard) {
-	
+
         Booking booking = room.book(guest, arrivalDate, stayLength, occupantNumber, creditCard);
         long confirmationno = booking.getConfirmationNumber();
         bookingsByConfirmationNumber.put(confirmationno, booking);
-          
+
         return confirmationno;
     }
 
-    public void checkin(long confirmationNumber,Room room, Guest guest, Date arrivalDate, int stayLength, int occupantNumber, CreditCard creditCard) 
-    {
-       Booking booking = room.book(guest, arrivalDate, stayLength, occupantNumber, creditCard);
-       
-       tempConfNumber = booking.getConfirmationNumber();
-        if (confirmationNumber != tempConfNumber) 
-        {
+    public void checkin(long confirmationNumber) {
+       //Booking booking = room.book(guest, arrivalDate, stayLength, occupantNumber, creditCard);
+       Booking booking=findBookingByConfirmationNumber(confirmationNumber);
+      //  tempConfNumber = booking.getConfirmationNumber();
+        
+        if (booking ==null) {
             throw new RuntimeException("No booking confirmation available");
         }
-       int roomId= booking.getRoomId();
-       booking.checkIn();
-       activeBookingsByRoomId.put(roomId,booking);
+        int roomId = booking.getRoomId();
+        booking.checkIn();
+        activeBookingsByRoomId.put(roomId, booking);
     }
 
-    
+    public void checkout(int roomId) {
 
-    public void checkout(int roomId) 
-    {
-      
-       Booking booking = activeBookingsByRoomId.get(roomId);
-       
-       if(booking==null)
-       {
-           throw new RuntimeException("No active booking associated with the room");
-       }
-       
-       booking.checkOut();
-       activeBookingsByRoomId.remove(roomId);
-       
-    }
-    
-    public void addServiceCharge(int roomId, ServiceType serviceType, double cost) 
-    {
         Booking booking = activeBookingsByRoomId.get(roomId);
-        if(booking==null)
-       {
-           throw new RuntimeException("No active booking associated with the room");
-       }
-         booking.addServiceCharge(serviceType,cost);
+
+        if (booking == null) {
+            throw new RuntimeException("No active booking associated with the room");
+        }
+
+        booking.checkOut();
+        activeBookingsByRoomId.remove(roomId);
+
+    }
+
+    public void addServiceCharge(int roomId, ServiceType serviceType, double cost) {
+        Booking booking = activeBookingsByRoomId.get(roomId);
+        if (booking == null) {
+            throw new RuntimeException("No active booking associated with the room");
+        }
+        booking.addServiceCharge(serviceType, cost);
     }
 
 }
