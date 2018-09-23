@@ -1,186 +1,56 @@
+/*
+ * This class will test the methods in class Room
+ */
 package hotel.entities;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-import hotel.checkout.CheckoutCTL;
 import hotel.credit.CreditCard;
 import hotel.credit.CreditCardType;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
  *
- * @author Hasith Malinga
+ * @author Chamath
  */
-public class RoomTest {
-
-    public static void main(String[] args) {
-
-        //testBookMethod();  
+public class RoomTest 
+{
+    public static void main(String[] args) 
+    {
+        /**********************Test Data**************************/
+        int stayLength = 2;
+        int numOfOccupants = 1;
+        int roomNumber = 500;
+        String guestName = "Chamath";
+        String address = "Endeavour Hills";
+        int tel = 111111;
+        int creditCardNumber = 12345;
+        int ccv = 111;
+        CreditCard creditCard = new CreditCard(CreditCardType.VISA, creditCardNumber,ccv);
+        Room room=new Room(roomNumber, RoomType.DOUBLE);
+        Guest guest = new Guest(guestName, address, tel);
+        Date arrivalDate = new Date();
+       /**********************Test Data**************************/ 
         
-        //Booking booking = testCheckInMethod();
+       //Create a new bookin instance
+        Booking booking = new Booking(guest, room, arrivalDate, stayLength, numOfOccupants, creditCard);
+        System.out.println("Checking the availability of room number " +roomNumber+" .......");
+        System.out.println("Room id "+room.getId()+" is ready");
         
-//        Date arrivalDate = Calendar.getInstance().getTime();        
-//        Guest guest = new Guest("Hasith", "20, Dandenong VIC", 452455019);
-//        CreditCard creditCard = new CreditCard(CreditCardType.VISA, 12345678, 666);        
-//        Room room = new Room(1, RoomType.DOUBLE);        
-//        Booking booking = room.book(guest, arrivalDate, 5, 3, creditCard);
-//        
-//        testCheckOutMethod(booking);
+        System.out.println("Making a booking...........");
+        room.book(guest, arrivalDate, stayLength, numOfOccupants, creditCard);
+        System.out.println("successfully booked in");
         
-        //testCheckoutCTL_creditDetailsEntered();
-
-    }
-
-    private static void testCheckoutCTL_creditDetailsEntered() {
-        Date arrivalDate = Calendar.getInstance().getTime();
-        CreditCard creditCard = new CreditCard(CreditCardType.VISA, 12345678, 666);
-
-        int cardNumber = creditCard.getNumber();
-        int cvv = creditCard.getCcv();
-
-        Hotel hotel = new Hotel();
-        hotel.addRoom(RoomType.DOUBLE, 1);
-        hotel.addRoom(RoomType.DOUBLE, 2);
-        hotel.addRoom(RoomType.TWIN_SHARE, 3);
-
-        Guest guest = new Guest("Hasith", "20, Dandenong VIC", 452455019);
-
-        Room room = hotel.findAvailableRoom(RoomType.DOUBLE, arrivalDate, 1);
-        long confNo = hotel.book(room, guest, arrivalDate, 1, 2, creditCard);
-        Booking booking = hotel.findBookingByConfirmationNumber(confNo);
-        //room.checkin();
-        hotel.checkin(confNo);
-
-        int roomId = room.getId();
-        //booking.addServiceCharge(ServiceType.ROOM_SERVICE, 7.00);
-
-        CheckoutCTL controller = new CheckoutCTL(hotel);
-        controller.run();
-
-        System.out.println("--------Before Check Out--------");
-        controller.roomIdEntered(roomId);
-        controller.creditDetailsEntered(CreditCardType.VISA, cardNumber, cvv);
-
-    }
-
-    private static void testBookMethod() {
-        String bookingState;
-        Date arrivalDate = Calendar.getInstance().getTime();
-
-        Guest guest = new Guest("Hasith", "20, Dandenong VIC", 452455019);
-        CreditCard creditCard = new CreditCard(CreditCardType.VISA, 12345678, 666);
-
-        //allocate a new room
-        Room room = new Room(1, RoomType.DOUBLE);
-        //make a booking for the room
-        Booking booking = new Booking(guest, room, arrivalDate, 5, 3, creditCard);
-
-        System.out.println("Testing book() method in Room.java");
-        System.out.println();
-
-        System.out.println("--------Before Booking--------");
-
-        System.out.println("Availability : " + room.isAvailable(arrivalDate, 5));
-
-        bookingState = booking.isPending() ? "PENDING" : "OTHER";
-        System.out.println("Booking State : " + bookingState);
-
-        System.out.println();
-        System.out.println("Calling book() method.....");
-        booking = room.book(guest, arrivalDate, 5, 3, creditCard);
-        System.out.println();
-
-        System.out.println("--------After Booking--------");
-
-        System.out.println("Availability : " + room.isAvailable(arrivalDate, 5));
-
-        bookingState = booking.isPending() ? "PENDING" : "OTHER";
-        System.out.println("Booking State : " + bookingState);
-        System.out.println();
-    }
-
-    private static Booking testCheckInMethod() {
-        String bookingState;
-        String roomState;
-        Date arrivalDate = Calendar.getInstance().getTime();
-        
-        Guest guest = new Guest("Hasith", "20, Dandenong VIC", 452455019);
-        CreditCard creditCard = new CreditCard(CreditCardType.VISA, 12345678, 666);
-        //allocate a new room
-        Room room = new Room(1, RoomType.DOUBLE);
-        //make a booking for the room
-        Booking booking = room.book(guest, arrivalDate, 5, 3, creditCard);
-
-        System.out.println("Testing checkin() method in Room.java");
-        System.out.println();
-
-        System.out.println("--------Before Check In--------");
-
-        roomState = room.isReady() ? "READY" : "OCCUPIED";
-        System.out.println("Room State : " + roomState);
-
-        bookingState = booking.isCheckedIn() ? "CHECKED_IN" : "NOT CHECKED_IN";
-        System.out.println("Booking State : " + bookingState);
-
-        System.out.println();
-        System.out.println("Calling checkin() method.....");
+        System.out.println("Making a checking...........");
+        //Create a cheking
+        room.checkin();
+        //Change the bookin status to CHECKED_IN
         booking.checkIn();
-        System.out.println();       
+        System.out.println("Room id "+room.getId()+" is checked in");
+        System.out.println("Checking out.......................");
         
-        System.out.println("--------After Check In--------");
-
-        roomState = room.isReady() ? "READY" : "OCCUPIED";
-        System.out.println("Room State : " + roomState);
-
-        bookingState = booking.isCheckedIn() ? "CHECKED_IN" : "NOT CHECKED_IN";
-        System.out.println("Booking State : " + bookingState);
-        System.out.println();
+        room.checkout(booking);
+        System.out.println("successfully Checked out"+ booking.isCheckedOut());
         
-        //System.out.println("--------Checkin again to test the exception--------");
-        //System.out.println();
-        //room.checkin();
-        return booking;
-    }
-
-    private static void testCheckOutMethod(Booking booking) {
-        String bookingState;
-        String roomState;
-
-        //get the room which belongs to the booking
-        Room room = booking.getRoom();                       
-        booking.checkIn();
         
-        System.out.println("Testing checkout() method in Room.java");
-        System.out.println();
-
-        System.out.println("--------Before Check Out--------");
-
-        roomState = room.isReady() ? "READY" : "OCCUPIED";
-        System.out.println("Room State : " + roomState);
-
-        bookingState = booking.isCheckedIn() ? "CHECKED_IN" : "NOT CHECKED_IN";
-        System.out.println("Booking State : " + bookingState);
-
-        System.out.println();
-        System.out.println("Calling booking.checkOut() method.....");
-        booking.checkOut();
-        System.out.println();
-
-        System.out.println("--------After Checked out--------");
-
-        roomState = room.isReady() ? "READY" : "OCCUPIED";
-        System.out.println("Room State : " + roomState);
-
-        bookingState = booking.isCheckedOut() ? "CHECKED_OUT" : "NOT CHECKED_OUT";
-        System.out.println("Booking State : " + bookingState);
-        System.out.println();
         
-        //System.out.println("--------Checkout again to test the exception--------");
-        //System.out.println();
-        //room.checkout(booking);
     }
 }
